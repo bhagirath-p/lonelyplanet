@@ -19,21 +19,31 @@
 			$destination = $taxonomy_object->node_name;
 			$parent_destination = $parent->node_name;
 			$attributes = $taxonomy_object->attributes();
-			print_r($attributes);
-			printf("\n=====================================================================\n");
-			build_webpage($taxonomy_object['atlas_node_id'], $destination_xml_object);
+			foreach ($attributes as $k => $v) {
+				if($k == 'atlas_node_id'){
+					build_webpage($v, $destination_xml_object);
+					break;
+				}
+			}
 		}
 	}
 
-	function build_webpage($destination_atlas_id, $destination_xml_object) {
-		$atlas_id = $destination_atlas_id;
+	function build_webpage($id, $destination_xml_object) {
+		$atlas_id = $id;
 		$destination_item = null;
 		foreach($destination_xml_object as $value) {
-		    if ($atlas_id == $destination_attributes['atlas_id']) {
-				$destination_attributes = $value->attributes();
-		        $destination_item = $value;
-		        break;
-		    }
+			$destination_attributes = $value->attributes();
+			// print_r($destination_attributes);
+			foreach($destination_attributes as $key => $val) {
+				// print_r($key);
+				if($key == 'atlas_id') {
+				    if ($atlas_id == $val) {
+				    	printf($atlas_id);
+						printf("\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
+				        break;
+				    }
+				}
+			}
 		}
 		$destinationfile = fopen($atlas_id.".html", "w") or die("Unable to open file!");
 		$destination = 'test';
