@@ -32,7 +32,6 @@
 			if(strcmp($taxonomy_atlas_id,$value->attributes()->atlas_id) == 0){
 				$destination_title = $value->attributes()->title;
 				$destinationfile = fopen($taxonomy_atlas_id.".html", "w") or die("Unable to open file!");
-				$destination = 'test';
 				$txt =
 				'<!DOCTYPE html>
 				 <html>
@@ -65,13 +64,13 @@
 				           <div class="block">
 				             <div class="secondary-navigation">
 				               <ul>
-				                 <li class="first"><a href="#">'.$destination.'</a></li>
+				                 <li class="first"><a href="#">'.$destination_title.'</a></li>
 				               </ul>
 				               <div class="clear"></div>
 				             </div>
 				             <div class="content">
 				               <div class="inner">
-				                 <p>Content</p>
+				                 <p>'.$value->introductory->introduction->overview.'</p>
 				               </div>
 				             </div>
 				           </div>
