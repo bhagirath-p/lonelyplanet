@@ -4,15 +4,40 @@
 	$taxonomy_xml_object = simplexml_load_string($taxonomy_content) or die("Error: Cannot create object");
 	$destination_xml_object = simplexml_load_string($destination_content) or die("Error: Cannot create object");
 
-	print_destination($taxonomy_xml_object->taxonomy->node, $taxonomy_xml_object->taxonomy, $destination_xml_object);
+	// To create the heirarchy string
+	function make_string($xml_object) {
+	}
 
-	function print_destination($taxonomy_object, $parent_object, $destination_xml_object) {
+	// To fetch heirarchy string
+	function get_heirarchy_string() {
+		$empty_xml_object = new SimpleXMLElement("<destination></destination>");
+		$heirarchy_object = make_heirarchy($GLOBALS['taxonomy_xml_object']->taxonomy->node, $empty_xml_object);
+		$heirarchy_string = make_string($heirarchy_object);
+		return $heirarchy_string;
+	}
+
+	// To make a heirarchy object
+	function make_heirarchy($taxonomy_object, $heirarchy_object) {
+		$parent_destination_object = $heirarchy_object;
+		$child_destination_object = $parent_destination_object->addChild("destination");
+		$child_destination_object->addAttribute('atlas_id', $taxonomy_object->attributes()->atlas_node_id);
+		$child_destination_object->addAttribute('destination_name', $taxonomy_object->node_name);
+		if(isset($taxonomy_object->node)) {
+			foreach ($taxonomy_object->node as $key => $value) {
+				make_heirarchy($value, $child_destination_object);
+			}
+		}
+		return $heirarchy_object;
+	}
+
+	// To print destination according to heirarchy
+	function print_destination($taxonomy_object, $parent_object) {
 		$parent = $parent_object;
 		if(isset($taxonomy_object->node)) {
 			$destination = $taxonomy_object->node_name;
 			$parent_destination = $parent->node_name;
 			foreach ($taxonomy_object->node as $key => $value) {
-				print_destination($value, $taxonomy_object, $destination_xml_object);
+				print_destination($value, $taxonomy_object);
 			}
 		}
 		else {
@@ -20,13 +45,14 @@
 			$parent_destination = $parent->node_name;
 			$attributes = $taxonomy_object->attributes();
 			$atlas_node_id = $taxonomy_object->attributes()->atlas_node_id;
-			build_webpage($atlas_node_id, $destination_xml_object);
+			build_webpage($atlas_node_id);
 		}
 	}
 
-	function build_webpage($id, $destination_xml_object) {
+	// To build respective webpage
+	function build_webpage($id) {
 		$taxonomy_atlas_id = $id;
-		$destination_item = null;
+		$destination_xml_object = $GLOBALS['destination_xml_object'];
 		foreach($destination_xml_object as $key => $value) {
 			$destination_atlast_id = $value->attributes()->atlas_id;
 			if(strcmp($taxonomy_atlas_id,$value->attributes()->atlas_id) == 0){
@@ -86,4 +112,6 @@
 		}
 	}
 
+	// Initiate the methods
+	print_destination($taxonomy_xml_object->taxonomy->node, $taxonomy_xml_object->taxonomy);
 ?>
